@@ -24,7 +24,7 @@ task('release', [
 //    'deploy:unlock',
 //    'deploy:cleanup',
 //    'deploy:success',
-    'deploy:publish',   
+    'deploy:publish',
 ]);
 
 before('deploy:cleanup', 'server:clear_cache');
