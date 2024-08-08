@@ -8,15 +8,18 @@ use Deployer\Task\Context;
 use function Deployer\cd;
 use function Deployer\download;
 use function Deployer\get;
+use function Deployer\on;
 use function Deployer\upload;
 
 function uploadContent(string $destination, string $content): void
 {
     if (!empty($workingPath = get('working_path', ''))) {
         $destination = "$workingPath/$destination";
+    } else {
+        $destination = "{{release_or_current_path}}/$destination";
     }
 
-    $path = tempnam(getcwd().'/'.get('data_dir').'/addons/ydeploy', 'tmp');
+    $path = tempnam(getcwd() . '/' . get('data_dir') . '/addons/ydeploy', 'tmp');
     file_put_contents($path, $content);
 
     try {
@@ -30,9 +33,11 @@ function downloadContent(string $source): string
 {
     if (!empty($workingPath = get('working_path', ''))) {
         $source = "$workingPath/$source";
+    } else {
+        $source = "{{release_or_current_path}}/$source";
     }
 
-    $path = tempnam(getcwd().'/'.get('data_dir').'/addons/ydeploy', 'tmp');
+    $path = tempnam(getcwd() . '/' . get('data_dir') . '/addons/ydeploy', 'tmp');
 
     download($source, $path);
     $content = file_get_contents($path);
@@ -43,15 +48,11 @@ function downloadContent(string $source): string
 
 function onHost(Host $host, callable $callback)
 {
-    Context::push(new Context($host));
+    $return = null;
 
-    try {
-        if (!$host instanceof Localhost) {
-            cd('{{release_path}}');
-        }
+    on($host, static function () use ($callback, &$return) {
+        $return = $callback();
+    });
 
-        return $callback($host);
-    } finally {
-        Context::pop();
-    }
+    return $return;
 }
