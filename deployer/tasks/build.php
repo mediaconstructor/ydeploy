@@ -8,11 +8,12 @@ task('build', static function () {
     set('keep_releases', 1);
 
     invoke('build:info');
-    invoke('deploy:setup');
-    invoke('deploy:release');
-    invoke('deploy:update_code');
+    invoke('build:setup');
+//    invoke('deploy:setup');
+//    invoke('deploy:release');
+//    invoke('deploy:update_code');
     invoke('build:assets');
     invoke('deploy:clear_paths');
-    invoke('deploy:symlink');
-    invoke('deploy:cleanup');
+//    invoke('deploy:symlink');
+//    invoke('deploy:cleanup');
 })->once(true);
