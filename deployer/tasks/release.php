@@ -7,8 +7,6 @@ task('release', [
     'deploy:info',
     'deploy:setup',
     'deploy:lock',
-//    'deploy:release',
-//    'deploy:symlink',
     'deploy:release',
     'deploy:copy_dirs',
     'upload',
@@ -19,11 +17,6 @@ task('release', [
     'deploy:redaxo_vendor',
     'setup',
     'database:migration',
-//    'deploy:symlink',
-//    'server:clear_cache',
-//    'deploy:unlock',
-//    'deploy:cleanup',
-//    'deploy:success',
     'deploy:publish',
 ]);
 

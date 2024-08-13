@@ -9,11 +9,6 @@ task('build', static function () {
 
     invoke('build:info');
     invoke('build:setup');
-//    invoke('deploy:setup');
-//    invoke('deploy:release');
-//    invoke('deploy:update_code');
     invoke('build:assets');
     invoke('deploy:clear_paths');
-//    invoke('deploy:symlink');
-//    invoke('deploy:cleanup');
 })->once(true);
