@@ -11,10 +11,6 @@ task('build:setup', static function () {
         throw new RuntimeException('Task "build" can only be called on host "local"');
     }
 
-    if (getenv('CI')) {
-        return;
-    }
-
     run('rm -rf {{release_path}}');
     run('mkdir -p {{release_path}}');
 
