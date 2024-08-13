@@ -153,14 +153,19 @@ task('setup', new class() {
 
         // export source database
         onHost($this->source, static function () use ($path) {
-            run('{{bin/php}} {{bin/console}} db:connection-options | xargs {{bin/mysqldump}} -c > '.escapeshellarg($path));
+            $sqlFile = escapeshellarg($path);
+            run('{{bin/php}} {{bin/console}} db:connection-options | xargs {{bin/mysqldump}} -c > ' . $sqlFile);
+            if (str_contains(run('head -n 1 ' . $sqlFile), 'sandbox')) {
+                info('Detected MariaDB sandbox mode: Removing');
+                run("sed -i '1d' " . $sqlFile);
+            }
 
             if (Context::get()->getHost() instanceof Localhost) {
                 return;
             }
 
             download("{{release_path}}/$path", $path);
-            run('rm -f '.escapeshellarg($path));
+            run('rm -f '.$sqlFile);
         });
 
         // upload and import the dump
