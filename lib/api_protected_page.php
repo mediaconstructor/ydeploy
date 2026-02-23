@@ -5,9 +5,9 @@
  */
 final class rex_api_ydeploy_protected_page extends rex_api_function
 {
-    public function execute()
+    public function execute(): rex_api_result
     {
-        if (!rex::getUser()->isAdmin()) {
+        if (!rex::requireUser()->isAdmin()) {
             throw new rex_api_exception('Protected pages can be (un)locked only by admins.');
         }
 
@@ -23,7 +23,7 @@ final class rex_api_ydeploy_protected_page extends rex_api_function
         foreach (rex_ydeploy_handler::getProtectedPages() as $page => $subpages) {
             // `yform/manager/table_edit` must not match `yform/man`
             // so we add slashes to avoid this
-            if (0 === strpos($protectedPage.'/', $page.'/')) {
+            if (str_starts_with($protectedPage.'/', $page.'/')) {
                 $foundPage = $page;
 
                 break;
@@ -50,7 +50,7 @@ final class rex_api_ydeploy_protected_page extends rex_api_function
         return $result;
     }
 
-    protected function requiresCsrfProtection()
+    protected function requiresCsrfProtection(): bool
     {
         return true;
     }
