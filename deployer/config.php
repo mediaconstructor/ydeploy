@@ -82,6 +82,7 @@ set('clear_paths', array_merge(
     [
         '.github',
         '.idea',
+        'deploy.php',
         'gulpfile.js',
         '.gitignore',
         '.gitlab-ci.yml',
