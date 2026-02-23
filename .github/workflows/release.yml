@@ -12,11 +12,11 @@ jobs:
         permissions:
             contents: write
         steps:
-            -   uses: actions/checkout@v2
+            -   uses: actions/checkout@v4
                 name: Checkout repository
             -   name: Set variables
                 id: vars
-                run: echo ::set-output name=release_version::${GITHUB_REF#refs/*/}
+                run: echo "release_version=${GITHUB_REF#refs/*/}" >> $GITHUB_OUTPUT
             -   name: Create release ZIP file
                 run: |
                     git archive "${{ steps.vars.outputs.release_version }}" \
@@ -25,3 +25,4 @@ jobs:
                 name: Upload release to GitHub
                 with:
                     artifacts: "ydeploy-${{ steps.vars.outputs.release_version }}.zip"
+                    allowUpdates: true
