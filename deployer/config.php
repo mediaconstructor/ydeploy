@@ -5,9 +5,10 @@ namespace Deployer;
 use Deployer\Task\Context;
 use function dirname;
 use function strlen;
+use function YDeploy\upgradeReleasesList;
 
 $baseDir = dirname(__DIR__, 5);
-if (0 === strpos($baseDir, getcwd())) {
+if (str_starts_with($baseDir, getcwd())) {
     $baseDir = substr($baseDir, strlen(getcwd()));
     $baseDir = ltrim($baseDir.'/', '/');
 }
@@ -25,6 +26,27 @@ localhost('local')
     ->set('labels', ['stage' => 'build']);
 
 set('bin/console', '{{base_dir}}redaxo/bin/console');
+
+set('branch', static function () {
+    $branch = null;
+    on(host('local'), static function () use (&$branch) {
+        $branch = run('{{bin/git}} rev-parse --abbrev-ref HEAD');
+    });
+
+    return $branch;
+});
+
+$releaseName = Deployer::get()->config->fetch('release_name');
+set('release_name', static function () use ($releaseName) {
+    upgradeReleasesList();
+    return $releaseName();
+});
+
+$releasesList = Deployer::get()->config->fetch('releases_list');
+set('releases_list', static function () use ($releasesList) {
+    upgradeReleasesList();
+    return $releasesList();
+});
 
 set('shared_dirs', array_merge(
     get('shared_dirs', []),
@@ -58,14 +80,21 @@ set('copy_dirs', array_merge(
 set('clear_paths', array_merge(
     get('clear_paths', []),
     [
+        '.github',
+        '.idea',
         'gulpfile.js',
-        'node_modules',
+        '.gitignore',
         '.gitlab-ci.yml',
-        'deploy.php',
+        '.php-cs-fixer.dist.php',
         'package.json',
+        'README.md',
+        'webpack.config.js',
         'yarn.lock',
+        'REVISION',
     ]
 ));
+
+set('keep_releases', 5);
 
 set('url', static function () {
     return 'https://'.Context::get()->getHost()->getHostname();

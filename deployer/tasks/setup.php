@@ -151,6 +151,10 @@ task('setup', new class() {
 
         $path = get('data_dir').'/addons/ydeploy/'.date('YmdHis').'.sql';
 
+        if (!$this->source instanceof Localhost) {
+            cd('{{current_path}}');
+        }
+
         // export source database
         onHost($this->source, static function () use ($path) {
             $sqlFile = escapeshellarg($path);
